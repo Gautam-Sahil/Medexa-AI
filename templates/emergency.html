@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medexa | EMERGENCY REDLINE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { --danger: #d63031; --dark: #2d3436; }
+        body { background: var(--danger); color: white; font-family: 'Inter', sans-serif; margin: 0; text-align: center; overflow: hidden; }
+        
+        .container { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        
+        .sos-icon { font-size: 5rem; animation: pulse 1.5s infinite; margin-bottom: 20px; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+
+        h1 { font-size: 3rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        p { font-size: 1.2rem; margin-bottom: 40px; opacity: 0.9; }
+
+        .action-card { background: white; color: var(--dark); padding: 30px; border-radius: 25px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        
+        .call-btn { 
+            display: block; background: var(--danger); color: white; text-decoration: none; 
+            padding: 20px; border-radius: 15px; font-size: 1.5rem; font-weight: 900; 
+            margin-bottom: 20px; transition: 0.3s;
+        }
+        
+        .location-box { background: #f1f2f6; padding: 15px; border-radius: 10px; font-size: 0.9rem; margin-top: 10px; border: 1px solid #dfe6e9; }
+        .back-btn { margin-top: 30px; color: white; text-decoration: none; font-size: 0.9rem; opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="sos-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <h1>Emergency Active</h1>
+        <p>Life-threatening situation detected.</p>
+
+        <div class="action-card">
+            <a href="tel:911" class="call-btn"><i class="fas fa-phone-alt"></i> CALL 911 NOW</a>
+            
+            <div style="text-align: left;">
+                <span style="font-weight: 600; font-size: 0.8rem; color: #636e72;">YOUR CURRENT LOCATION (FOR DISPATCH)</span>
+                <div class="location-box" id="location-display">Fetching GPS coordinates...</div>
+            </div>
+        </div>
+
+        <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> I am safe, take me back</a>
+    </div>
+
+    <script>
+        // Fetch User's Location instantly for the 911 call
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude.toFixed(4);
+                const long = position.coords.longitude.toFixed(4);
+                document.getElementById('location-display').innerHTML = 
+                    `<i class="fas fa-map-marker-alt"></i> Lat: ${lat}, Long: ${long} <br> <small>Share this with the operator.</small>`;
+            }, () => {
+                document.getElementById('location-display').innerText = "Location access denied. Please describe your surroundings.";
+            });
+        }
+    </script>
+</body>
+</html>

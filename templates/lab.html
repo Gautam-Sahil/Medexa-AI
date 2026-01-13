@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medexa | Lab Lens Report Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { --primary: #10ac84; --bg: #f4f7f6; --white: #ffffff; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; display: flex; height: 100vh; }
+        
+        .sidebar { width: 80px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding: 20px 0; }
+        .nav-item { margin-bottom: 30px; color: #b2bec3; font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { color: var(--primary); }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; }
+        .header { padding: 20px 40px; background: white; display: flex; justify-content: space-between; align-items: center; }
+        
+        .analyzer-container { display: flex; flex: 1; padding: 30px; gap: 30px; }
+        
+        /* Left: Upload Section */
+        .upload-section { flex: 1; background: white; border-radius: 20px; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #cbd5e0; }
+        .upload-section i { font-size: 4rem; color: var(--primary); margin-bottom: 20px; }
+        #report-preview { max-width: 100%; max-height: 300px; display: none; margin-top: 20px; border-radius: 10px; }
+
+        /* Right: Analysis Section */
+        .analysis-section { flex: 1.5; background: white; border-radius: 20px; padding: 30px; display: flex; flex-direction: column; overflow-y: auto; }
+        .result-card { background: #f9fbff; border-left: 5px solid var(--primary); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        
+        .btn-analyze { background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 20px; }
+        .loading-spinner { display: none; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="nav-item" onclick="location.href='/'"><i class="fas fa-home"></i></div>
+        <div class="nav-item active"><i class="fas fa-microscope"></i></div>
+        <div class="nav-item" onclick="location.href='/chat'"><i class="fas fa-comment-medical"></i></div>
+    </nav>
+
+    <div class="main-content">
+        <header class="header">
+            <div>
+                <h1 style="margin:0; font-size: 1.5rem;">Lab Lens Analyzer</h1>
+                <p style="margin:0; font-size: 0.8rem; color: #636e72;">Upload your medical reports for an instant AI breakdown.</p>
+            </div>
+            <button class="btn-analyze" onclick="startAnalysis()">Run AI Analysis</button>
+        </header>
+
+        <div class="analyzer-container">
+            <div class="upload-section" id="drop-zone">
+                <i class="fas fa-file-medical"></i>
+                <h3>Drag & Drop Report</h3>
+                <p>Or click to select a file (PDF, JPG, PNG)</p>
+                <input type="file" id="reportFile" hidden accept="image/*,application/pdf">
+                <img id="report-preview" src="">
+            </div>
+
+            <div class="analysis-section" id="analysis-results">
+                <div style="text-align: center; color: #b2bec3; margin-top: 100px;">
+                    <i class="fas fa-robot" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                    <p>Waiting for report upload...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        // Handle File Selection & Preview
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('reportFile');
+
+        dropZone.onclick = () => fileInput.click();
+
+        fileInput.onchange = function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    $('#report-preview').attr('src', e.target.result).show();
+                    $('.upload-section h3, .upload-section p, .upload-section i').hide();
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        function startAnalysis() {
+            const file = fileInput.files[0];
+            if (!file) return alert("Please upload a report first!");
+
+            $('#analysis-results').html('<div style="text-align:center; margin-top:100px;"><div class="loading-spinner" style="display:inline-block;"></div><p>AI is reading your report values...</p></div>');
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('msg', 'Analyze this medical lab report. Extract all test names, results, and reference ranges. Explain any abnormal values and provide a summary.');
+
+            $.ajax({
+                type: "POST",
+                url: "/analyze_report",
+                data: formData,
+                processData: false,
+                contentType: false,
+            }).done(function(data) {
+                const htmlContent = marked.parse(data);
+                $('#analysis-results').html(`<div class="result-card">${htmlContent}</div>`);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medexa | Health Risk Predictor</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+      :root {
+        --primary: #3498db;
+        --bg: #f8f9fa;
+        --danger: #e74c3c;
+        --warning: #f1c40f;
+        --success: #2ecc71;
+      }
+      body {
+        background: var(--bg);
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        display: flex;
+        height: 100vh;
+      }
+
+      .main-content {
+        flex: 1;
+        padding: 40px;
+        overflow-y: auto;
+      }
+      .grid-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Form Styling */
+      .risk-form {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #34495e;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+      }
+
+      /* Results Section */
+      .risk-results {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .score-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 10px solid #eee;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+      }
+
+      .btn-predict {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+        font-size: 1rem;
+      }
+      .btn-predict:hover {
+        opacity: 0.9;
+      }
+
+      .ai-insight {
+        margin-top: 20px;
+        text-align: left;
+        padding: 15px;
+        background: #f0f7ff;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        border-left: 4px solid var(--primary);
+      }
+
+      /* Styling the parsed AI content */
+#ai-insight-text h2 {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin-top: 0;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 5px;
+}
+
+#ai-insight-text p {
+    margin: 10px 0;
+    line-height: 1.5;
+    color: #4a5568;
+}
+
+#ai-insight-text strong {
+    color: #2d3748;
+    font-weight: 700;
+}
+
+/* Make the Lifestyle Tip stand out */
+#ai-insight-text p:has(strong:contains("Lifestyle Tip")) {
+    background: #e6fffa;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #b2f5ea;
+}
+
+    </style>
+  </head>
+  <body>
+    <div class="main-content">
+      <h1 style="text-align: center; margin-bottom: 40px">
+        Predictive Health Risk Dashboard
+      </h1>
+
+      <div class="grid-container">
+        <div class="risk-form">
+          <h3>Vitals & Lifestyle Data</h3>
+          <form id="riskForm">
+            <div class="form-group">
+              <label>Age</label>
+              <input type="number" id="age" placeholder="e.g. 45" required />
+            </div>
+            <div class="form-group">
+              <label>Systolic Blood Pressure (mmHg)</label>
+              <input type="number" id="bp" placeholder="e.g. 130" required />
+            </div>
+            <div class="form-group">
+              <label>Cholesterol Level (mg/dL)</label>
+              <input type="number" id="chol" placeholder="e.g. 200" required />
+            </div>
+            <div class="form-group">
+              <label>Smoker Status</label>
+              <select id="smoker">
+                <option value="no">Non-Smoker</option>
+                <option value="yes">Smoker</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-predict">
+              Calculate Health Risk
+            </button>
+          </form>
+        </div>
+
+        <div class="risk-results" id="results-area" style="display: none">
+          <h3>Your 10-Year Heart Risk Score</h3>
+          <div class="score-circle" id="score-display">0%</div>
+          <p id="risk-label" style="font-weight: 700"></p>
+          <div class="ai-insight" id="ai-insight-text"></div>
+          <button
+            class="btn-predict"
+            style="background: #636e72; margin-top: 20px"
+            onclick="location.reload()"
+          >
+            Reset Analysis
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+      $("#riskForm").on("submit", function (e) {
+        e.preventDefault();
+
+        const data = {
+          age: $("#age").val(),
+          bp: $("#bp").val(),
+          chol: $("#chol").val(),
+          smoker: $("#smoker").val(),
+        };
+
+        $.ajax({
+          type: "POST",
+          url: "/predict_risk",
+          data: JSON.stringify(data),
+          contentType: "application/json",
+        }).done(function (response) {
+          $("#results-area").fadeIn();
+          $("#score-display").text(response.score + "%");
+
+          // Convert Markdown (## and **) into clean HTML
+          const cleanInsight = marked.parse(response.insight);
+          $("#ai-insight-text").html(cleanInsight);
+
+          // Color coding logic
+          if (response.score < 10) {
+            $("#score-display").css("border-color", "#2ecc71");
+            $("#risk-label").text("LOW RISK").css("color", "#2ecc71");
+          } else if (response.score < 20) {
+            $("#score-display").css("border-color", "#f1c40f");
+            $("#risk-label").text("MODERATE RISK").css("color", "#f1c40f");
+          } else {
+            $("#score-display").css("border-color", "#e74c3c");
+            $("#risk-label").text("HIGH RISK").css("color", "#e74c3c");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

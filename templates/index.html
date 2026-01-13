@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medexa OS | Health Ecosystem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #007bff;
+            --accent: #10ac84;
+            --bg: #f8f9fc;
+            --text: #2d3436;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); }
+
+        /* Header */
+        .navbar {
+            padding: 20px 50px; background: white; display: flex;
+            justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--primary); font-size: 1.4rem; }
+        .logo img { width: 40px; }
+
+        /* Hero Section */
+        .hero { padding: 60px 50px; text-align: center; }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 10px; color: #1e272e; }
+        .hero p { color: #636e72; font-size: 1.1rem; max-width: 600px; margin: 0 auto 40px; }
+
+        /* Feature Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px; max-width: 1200px; margin: 0 auto; padding: 0 20px 50px;
+        }
+
+        .card {
+            background: white; padding: 30px; border-radius: 20px;
+            transition: all 0.3s ease; border: 1px solid #edf2f7;
+            text-decoration: none; color: inherit; position: relative;
+            overflow: hidden;
+        }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: var(--primary); }
+
+        .icon-box {
+            width: 60px; height: 60px; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin-bottom: 20px;
+        }
+        
+        /* Specific Colors */
+        .chat-icon { background: #e3f2fd; color: #007bff; }
+        .lab-icon { background: #e8f5e9; color: #2ecc71; }
+        .risk-icon { background: #fff3e0; color: #f39c12; }
+        .med-icon { background: #f3e5f5; color: #9b59b6; }
+
+        .card h3 { margin-bottom: 10px; font-size: 1.2rem; }
+        .card p { font-size: 0.9rem; color: #636e72; line-height: 1.5; }
+        
+        .badge {
+            position: absolute; top: 15px; right: 15px;
+            font-size: 0.65rem; padding: 4px 8px; border-radius: 20px;
+            background: #dfe6e9; font-weight: 700;
+        }
+        .badge.active { background: #d1fae5; color: #065f46; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='beyond.png') }}" alt="Logo">
+            MEDEXA OS
+        </div>
+        <div class="user-info">
+            <span style="font-size: 0.8rem; font-weight: 600;"><i class="fas fa-user-shield"></i> SECURE ACCESS</span>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1>Welcome to Medexa AI</h1>
+        <p>Your complete intelligent healthcare ecosystem. Access diagnostics, analysis, and AI consultation in one place.</p>
+    </header>
+
+    
+
+    <div class="grid">
+        <a href="/chat" class="card">
+            <span class="badge active">AVAILABLE</span>
+            <div class="icon-box chat-icon"><i class="fas fa-comment-medical"></i></div>
+            <h3>Medexa Assistant</h3>
+            <p>AI-powered medical consultation using RAG and Vision technology. Ask about symptoms or upload images.</p>
+        </a>
+
+        <a href="/lab" class="card">
+            <span class="badge active">AVAILABLE</span>
+            <div class="icon-box lab-icon"><i class="fas fa-microscope"></i></div>
+            <h3>Lab Lens</h3>
+            <p>Advanced OCR and AI analysis for blood tests, MRI, and X-ray reports. Understand your data in plain English.</p>
+        </a>
+
+      <a href="/risk" class="card">
+    <span class="badge active">AVAILABLE</span>
+    <div class="icon-box risk-icon"><i class="fas fa-chart-line"></i></div>
+    <h3>Risk Predictor</h3>
+    <p>Predict your heart health risk using medical data like BP and cholesterol. Get instant AI lifestyle insights.</p>
+</a>
+
+        <a href="/emergency" class="card" style="border-color: #ff7675; background: #fff5f5;">
+    <span class="badge" style="background: #ff7675; color: white;">SOS</span>
+    <div class="icon-box" style="background: #fab1a0; color: #d63031;"><i class="fas fa-ambulance"></i></div>
+    <h3>Emergency Mode</h3>
+    <p>Immediate access to emergency numbers and GPS sharing for critical health situations.</p>
+</a>
+    </div>
+
+</body>
+</html>
