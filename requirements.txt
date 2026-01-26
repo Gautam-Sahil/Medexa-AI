@@ -1,13 +1,13 @@
 --extra-index-url https://download.pytorch.org/whl/cpu
-Flask==3.1.1
-python-dotenv==1.1.0
-langchain==0.3.26
-langchain-community==0.3.26
-langchain-openai==0.3.24
-langchain-pinecone==0.2.8
-pinecone==7.3.0
-fpdf2==2.8.5
-sentence-transformers==4.1.0
+Flask>=3.0.0
+python-dotenv>=1.0.0
+langchain>=0.3.0
+langchain-community>=0.3.0
+langchain-openai>=0.3.0
+langchain-pinecone>=0.2.0
+pinecone-client>=5.0.0
+fpdf2>=2.8.0
+gunicorn>=21.0.0
+sentence-transformers>=3.0.0
 torch==2.2.1+cpu
-gunicorn==21.2.0
-pypdf==5.6.1
+pypdf>=5.0.0
