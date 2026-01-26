@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Med-Scribe | Professional Medical Documentation</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='beyond.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --accent: #06b6d4;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                              radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                              radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .scribe-container {
+            width: 100%;
+            max-width: 850px;
+            background: var(--card);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .scribe-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 40px;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .scribe-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .scribe-header p {
+            font-weight: 300;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content-body {
+            padding: 40px;
+        }
+
+        .instruction-box {
+            background: #f8fafc;
+            border-left: 4px solid var(--accent);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .instruction-box i {
+            color: var(--accent);
+            font-size: 1.2rem;
+            margin-top: 3px;
+        }
+
+        .instruction-box span {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 20px;
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+            resize: none;
+            background-color: #fcfcfd;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .generate-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .generate-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Loading Animation */
+        .loader {
+            display: none;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #ffffff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 640px) {
+            .scribe-header { padding: 30px 20px; }
+            .content-body { padding: 30px 20px; }
+            .scribe-header h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scribe-container">
+        <div class="scribe-header">
+            <h1><i class="fas fa-notes-medical"></i> Med-Scribe</h1>
+            <p>Convert clinical observations into professional digital records</p>
+        </div>
+
+        <div class="content-body">
+            <div class="instruction-box">
+                <i class="fas fa-magic"></i>
+                <span>Type your raw consultation notes below. Include symptoms, diagnosis, and medication details in any order. Our AI will structure and format it into an official PDF letterhead.</span>
+            </div>
+
+            <form action="/generate_pdf_report" method="POST" id="scribeForm">
+                <div class="input-group">
+                    <label>Consultation Details</label>
+                    <textarea 
+                        name="notes" 
+                        id="notesInput"
+                        placeholder="Example: Patient Gautam, 24y. Complaining of high fever and dry cough for 3 days. Throat is red. Suspected Viral Infection. Prescribe Azithromycin 500mg once daily for 5 days. Suggested rest and plenty of fluids. Follow up if fever persists beyond 48 hours."
+                        required
+                    ></textarea>
+                </div>
+
+                <button type="submit" class="generate-btn" id="submitBtn">
+                    <span id="btnText">Finalize & Generate Report</span>
+                    <i class="fas fa-file-pdf" id="btnIcon"></i>
+                    <div class="loader" id="btnLoader"></div>
+                </button>
+            </form>
+
+            <div class="footer-note">
+                <i class="fas fa-shield-alt"></i> Secure AI Documentation | HIPAA Compliant Formatting
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('scribeForm');
+        const btn = document.getElementById('submitBtn');
+        const loader = document.getElementById('btnLoader');
+        const icon = document.getElementById('btnIcon');
+        const text = document.getElementById('btnText');
+
+        form.onsubmit = function() {
+            // Show loading state
+            text.innerText = "Processing Clinical Data...";
+            icon.style.display = "none";
+            loader.style.display = "block";
+            btn.style.opacity = "0.8";
+            btn.style.pointerEvents = "none";
+
+            // The form will now submit naturally to the /generate_pdf_report route
+            // which returns a file download. After download starts, we reset UI.
+            setTimeout(() => {
+                text.innerText = "Finalize & Generate Report";
+                icon.style.display = "block";
+                loader.style.display = "none";
+                btn.style.opacity = "1";
+                btn.style.pointerEvents = "auto";
+            }, 5000); 
+        };
+    </script>
+</body>
+</html>

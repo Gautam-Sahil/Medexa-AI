@@ -3,113 +3,740 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medexa | Lab Lens Report Analyzer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Medexa AI | Lab Report Analyzer</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='beyond.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root { --primary: #10ac84; --bg: #f4f7f6; --white: #ffffff; }
-        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; display: flex; height: 100vh; }
-        
-        .sidebar { width: 80px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding: 20px 0; }
-        .nav-item { margin-bottom: 30px; color: #b2bec3; font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
-        .nav-item:hover, .nav-item.active { color: var(--primary); }
+        :root {
+            --primary: #10ac84;
+            --primary-dark: #0d966e;
+            --secondary: #6c63ff;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --card-bg: #ffffff;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
 
-        .main-content { flex: 1; display: flex; flex-direction: column; }
-        .header { padding: 20px 40px; background: white; display: flex; justify-content: space-between; align-items: center; }
-        
-        .analyzer-container { display: flex; flex: 1; padding: 30px; gap: 30px; }
-        
-        /* Left: Upload Section */
-        .upload-section { flex: 1; background: white; border-radius: 20px; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #cbd5e0; }
-        .upload-section i { font-size: 4rem; color: var(--primary); margin-bottom: 20px; }
-        #report-preview { max-width: 100%; max-height: 300px; display: none; margin-top: 20px; border-radius: 10px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        /* Right: Analysis Section */
-        .analysis-section { flex: 1.5; background: white; border-radius: 20px; padding: 30px; display: flex; flex-direction: column; overflow-y: auto; }
-        .result-card { background: #f9fbff; border-left: 5px solid var(--primary); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-        
-        .btn-analyze { background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 20px; }
-        .loading-spinner { display: none; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 12px;
+            padding: 10px 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transform: translateX(400px);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border-left: 5px solid var(--primary);
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.success .toast-icon {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.error .toast-icon {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
+
+        .toast.warning .toast-icon {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            color: var(--gray);
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 5px;
+            margin-left: 10px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Upload Section */
+        .upload-section {
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-section:hover {
+            border-color: var(--primary);
+        }
+
+        .upload-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, rgba(16, 172, 132, 0.1) 0%, rgba(108, 99, 255, 0.1) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            color: var(--primary);
+            font-size: 3rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover .upload-icon {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, rgba(16, 172, 132, 0.2) 0%, rgba(108, 99, 255, 0.2) 100%);
+        }
+
+        .upload-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .upload-subtitle {
+            color: var(--gray);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .file-tags {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .tag {
+            background: rgba(16, 172, 132, 0.1);
+            color: var(--primary);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .preview-container {
+            margin-top: 30px;
+            display: none;
+        }
+
+        #report-preview {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Analysis Section */
+        .analysis-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .analysis-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gray);
+        }
+
+        .status-dot.active {
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .results-container {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 500px;
+            padding-right: 10px;
+        }
+
+        /* Results */
+        .placeholder {
+            text-align: center;
+            color: var(--gray);
+            padding: 60px 20px;
+        }
+
+        .placeholder i {
+            font-size: 4rem;
+            color: rgba(16, 172, 132, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .result-card {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+            animation: slideUp 0.5s ease;
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-content {
+            color: var(--dark);
+            line-height: 1.7;
+        }
+
+        .result-content p {
+            margin-bottom: 10px;
+        }
+
+        .result-content ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            background: rgba(16, 172, 132, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        /* Button */
+        .analyze-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 30px auto 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(16, 172, 132, 0.3);
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(16, 172, 132, 0.4);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Scrollbar */
+        .results-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .results-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .results-container::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .card {
+                padding: 30px;
+            }
+
+            .toast-container {
+                top: 20px;
+                right: 20px;
+                left: 20px;
+            }
+
+            .toast {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .upload-title {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
 
-    <nav class="sidebar">
-        <div class="nav-item" onclick="location.href='/'"><i class="fas fa-home"></i></div>
-        <div class="nav-item active"><i class="fas fa-microscope"></i></div>
-        <div class="nav-item" onclick="location.href='/chat'"><i class="fas fa-comment-medical"></i></div>
-    </nav>
-
-    <div class="main-content">
-        <header class="header">
-            <div>
-                <h1 style="margin:0; font-size: 1.5rem;">Lab Lens Analyzer</h1>
-                <p style="margin:0; font-size: 0.8rem; color: #636e72;">Upload your medical reports for an instant AI breakdown.</p>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Upload Section -->
+        <div class="card upload-section" id="drop-zone">
+            <div class="upload-icon">
+                <i class="fas fa-file-medical-alt"></i>
             </div>
-            <button class="btn-analyze" onclick="startAnalysis()">Run AI Analysis</button>
-        </header>
-
-        <div class="analyzer-container">
-            <div class="upload-section" id="drop-zone">
-                <i class="fas fa-file-medical"></i>
-                <h3>Drag & Drop Report</h3>
-                <p>Or click to select a file (PDF, JPG, PNG)</p>
-                <input type="file" id="reportFile" hidden accept="image/*,application/pdf">
-                <img id="report-preview" src="">
+            
+            <h2 class="upload-title">Upload Lab Report</h2>
+            <p class="upload-subtitle">Drag & drop or click to upload your medical report for AI analysis</p>
+            
+            <div class="file-tags">
+                <span class="tag">JPG/PNG</span>
+                <span class="tag">PDF</span>
+                <span class="tag">Scan Images</span>
+                <span class="tag">Lab Reports</span>
             </div>
+            
+            <input type="file" id="reportFile" hidden accept="image/*,application/pdf">
+            
+            <div class="preview-container" id="preview-container">
+                <img id="report-preview" src="" alt="Report Preview">
+            </div>
+        </div>
 
-            <div class="analysis-section" id="analysis-results">
-                <div style="text-align: center; color: #b2bec3; margin-top: 100px;">
-                    <i class="fas fa-robot" style="font-size: 3rem; margin-bottom: 10px;"></i>
-                    <p>Waiting for report upload...</p>
+        <!-- Analysis Section -->
+        <div class="card analysis-section">
+            <div class="analysis-header">
+                <h2 class="analysis-title">AI Analysis</h2>
+                <div class="status">
+                    <div class="status-dot" id="status-dot"></div>
+                    <span id="status-text">Ready</span>
                 </div>
             </div>
+            
+            <div class="results-container" id="results-container">
+                <div class="placeholder" id="placeholder">
+                    <i class="fas fa-robot"></i>
+                    <h3>No Report Analyzed</h3>
+                    <p>Upload a lab report to get AI-powered insights</p>
+                </div>
+                
+                <div class="loading" id="loading" style="display: none;">
+                    <div class="loader"></div>
+                    <p>AI is analyzing your report...</p>
+                </div>
+                
+                <div id="results-content" style="display: none;"></div>
+            </div>
+            
+            <button class="analyze-btn" id="analyze-btn" onclick="startAnalysis()" disabled>
+                <i class="fas fa-brain"></i>
+                Analyze Report
+            </button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
-        // Handle File Selection & Preview
+        // Toast Notification System
+        function showToast(message, type = 'info', duration = 5000) {
+            const container = document.getElementById('toast-container');
+            const toastId = 'toast-' + Date.now();
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-times-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.id = toastId;
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${icons[type]}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="removeToast('${toastId}')">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Show with animation
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            // Auto remove
+           // Auto remove ONLY if duration is not null
+  if (duration > 0) {
+    setTimeout(() => {
+        removeToast(toastId);
+    }, duration);
+}
+
+        }
+        
+        function removeToast(toastId) {
+            const toast = document.getElementById(toastId);
+            if (toast) {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 400);
+            }
+        }
+
+        // Elements
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('reportFile');
+        const previewContainer = document.getElementById('preview-container');
+        const previewImg = document.getElementById('report-preview');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const placeholder = document.getElementById('placeholder');
+        const loading = document.getElementById('loading');
+        const resultsContent = document.getElementById('results-content');
 
-        dropZone.onclick = () => fileInput.click();
+        // Update status
+        function updateStatus(text, color = '#64748b') {
+            statusText.textContent = text;
+            statusDot.style.background = color;
+            if (color === '#10b981') {
+                statusDot.classList.add('active');
+            } else {
+                statusDot.classList.remove('active');
+            }
+        }
 
-        fileInput.onchange = function() {
+        // Handle file upload
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', function() {
             const file = this.files[0];
-            if (file) {
+            if (!file) return;
+
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+            const isValidType = validTypes.includes(file.type) || file.name.toLowerCase().endsWith('.pdf');
+            
+            if (!isValidType) {
+                showToast('Please upload a valid image or PDF file', 'error');
+                return;
+            }
+
+            // Enable analyze button
+            analyzeBtn.disabled = false;
+            
+            // Show preview for images
+            if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    $('#report-preview').attr('src', e.target.result).show();
-                    $('.upload-section h3, .upload-section p, .upload-section i').hide();
+                    previewImg.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                    dropZone.style.cursor = 'default';
                 };
                 reader.readAsDataURL(file);
+            } else {
+                // For PDFs, show file name
+                previewContainer.innerHTML = `
+                    <div style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 10px;">
+                        <i class="fas fa-file-pdf" style="font-size: 3rem; color: #ef4444; margin-bottom: 10px;"></i>
+                        <p style="color: var(--dark); font-weight: 500;">${file.name}</p>
+                        <p style="color: var(--gray); font-size: 0.9rem;">PDF Report Ready</p>
+                    </div>
+                `;
+                previewContainer.style.display = 'block';
             }
-        };
+            
+            updateStatus('File Uploaded', '#10b981');
+            showToast('Report uploaded successfully', 'success');
+        });
 
-        function startAnalysis() {
+        // Drag and drop
+        ['dragenter', 'dragover'].forEach(event => {
+            dropZone.addEventListener(event, (e) => {
+                e.preventDefault();
+                dropZone.style.border = '2px dashed var(--primary)';
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(event => {
+            dropZone.addEventListener(event, (e) => {
+                e.preventDefault();
+                dropZone.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                
+                if (event === 'drop') {
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        fileInput.files = files;
+                        fileInput.dispatchEvent(new Event('change'));
+                    }
+                }
+            });
+        });
+
+        // Start analysis
+        async function startAnalysis() {
             const file = fileInput.files[0];
-            if (!file) return alert("Please upload a report first!");
+            if (!file) {
+                showToast('Please upload a report first', 'warning');
+                return;
+            }
 
-            $('#analysis-results').html('<div style="text-align:center; margin-top:100px;"><div class="loading-spinner" style="display:inline-block;"></div><p>AI is reading your report values...</p></div>');
+            // Show loading, hide placeholder
+            loading.style.display = 'block';
+            placeholder.style.display = 'none';
+            resultsContent.style.display = 'none';
+            updateStatus('Analyzing...', '#f59e0b');
+            analyzeBtn.disabled = true;
 
             const formData = new FormData();
             formData.append('image', file);
-            formData.append('msg', 'Analyze this medical lab report. Extract all test names, results, and reference ranges. Explain any abnormal values and provide a summary.');
 
-            $.ajax({
-                type: "POST",
-                url: "/analyze_report",
-                data: formData,
-                processData: false,
-                contentType: false,
-            }).done(function(data) {
-                const htmlContent = marked.parse(data);
-                $('#analysis-results').html(`<div class="result-card">${htmlContent}</div>`);
-            });
+            try {
+                const response = await fetch('/analyze_report', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    if (response.status === 429) {
+                        throw new Error('AI service is currently busy. Please try again in a moment.');
+                    }
+                    throw new Error(`Analysis failed (Status: ${response.status})`);
+                }
+
+                const data = await response.text();
+                
+                // Hide loading, show results
+                loading.style.display = 'none';
+                resultsContent.style.display = 'block';
+                
+                // Parse markdown and create result card
+                const html = marked.parse(data);
+                resultsContent.innerHTML = `
+                    <div class="result-card">
+                        <h3 class="result-title">
+                            <i class="fas fa-chart-line"></i>
+                            AI Analysis Results
+                        </h3>
+                        <div class="result-content">${html}</div>
+                    </div>
+                `;
+                
+                updateStatus('Analysis Complete', '#10b981');
+                analyzeBtn.disabled = false;
+                showToast('Report analysis completed successfully', 'success');
+
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // Show error message
+                loading.style.display = 'none';
+                placeholder.style.display = 'block';
+                updateStatus('Analysis Failed', '#ef4444');
+                analyzeBtn.disabled = false;
+                
+                // Show toast instead of alert
+                showToast(error.message || 'Analysis failed. Please try again.', 'error');
+            }
         }
+
+        // Initialize marked
+        marked.setOptions({
+            breaks: true,
+            gfm: true
+        });
     </script>
 </body>
 </html>

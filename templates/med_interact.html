@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Med-Interact | MedExa AI</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='beyond.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #06b6d4;
+            --bg: #f8fafc;
+            --card: rgba(255, 255, 255, 0.9);
+            --text: #1e293b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0f2fe 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: #64748b;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            animation: scaleIn 0.5s ease;
+        }
+
+        .form-section {
+            padding: 40px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #475569;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            resize: none;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.02);
+        }
+
+        .upload-area i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        #image-preview {
+            max-width: 200px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .check-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+        }
+
+        /* Result Section Styling */
+        .result-section {
+            padding: 40px;
+            display: none;
+            background: #fff;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .analysis-box {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 16px;
+            line-height: 1.6;
+            white-space: pre-line;
+            font-size: 1.05rem;
+        }
+
+        .loader {
+            display: none;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        .disclaimer {
+            margin-top: 30px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-align: center;
+            max-width: 600px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1><i class="fas fa-pills"></i> Med-Interact</h1>
+        <p>AI-Powered Drug Interaction & Safety Intelligence</p>
+    </div>
+
+    <div class="main-container">
+        <div class="form-section">
+            <form id="interactionForm">
+                <div class="input-group">
+                    <label>List your medications</label>
+                    <textarea name="msg" id="msgInput" placeholder="Enter medication names separated by commas (e.g., Warfarin, Aspirin, Vitamin E)..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Or scan prescriptions/labels</label>
+                    <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+                        <i class="fas fa-camera-retro"></i>
+                        <p id="upload-text">Click to capture or upload an image</p>
+                        <img id="image-preview" src="#" alt="Preview">
+                        <input type="file" id="imageInput" name="image" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                    </div>
+                </div>
+
+                <button type="button" class="check-btn" onclick="checkSafety()">
+                    <span id="btn-text">Analyze Safety Risks</span>
+                    <i class="fas fa-shield-virus"></i>
+                </button>
+                <div class="loader" id="loader"></div>
+            </form>
+        </div>
+
+        <div class="result-section" id="resultArea">
+            <div class="result-header">
+                <i class="fas fa-clipboard-check" style="color: var(--success); font-size: 1.5rem;"></i>
+                <h3 style="color: var(--text);">Clinical Safety Analysis</h3>
+            </div>
+            <div class="analysis-box" id="analysisContent">
+                </div>
+        </div>
+    </div>
+
+    <p class="disclaimer">
+        <i class="fas fa-info-circle"></i> 
+        <strong>Important:</strong> Med-Interact is an educational tool. Our AI can make mistakes. Never change your medication without consulting your doctor or a licensed pharmacist.
+    </p>
+
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('image-preview');
+            const text = document.getElementById('upload-text');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'inline-block';
+                    text.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function checkSafety() {
+            const form = document.getElementById('interactionForm');
+            const btnText = document.getElementById('btn-text');
+            const loader = document.getElementById('loader');
+            const resultArea = document.getElementById('resultArea');
+            const content = document.getElementById('analysisContent');
+
+            // UI Reset
+            btnText.innerText = "Analyzing...";
+            loader.style.display = 'block';
+            resultArea.style.display = 'none';
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/check_interactions', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.result) {
+                    // Modern formatting: Replace markdown style markers if any
+                    let formattedText = data.result.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    content.innerHTML = formattedText;
+                    resultArea.style.display = 'block';
+                    
+                    // Smooth scroll to result
+                    resultArea.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert("Error: " + (data.error || "Analysis failed"));
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Critical error connecting to the medical server.");
+            } finally {
+                btnText.innerText = "Analyze Safety Risks";
+                loader.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

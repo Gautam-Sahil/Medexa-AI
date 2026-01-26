@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medexa OS | Health Ecosystem</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='beyond.png') }}">
+    <meta name="theme-color" content="#10ac84">
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -18,13 +21,68 @@
         body { background: var(--bg); color: var(--text); }
 
         /* Header */
-        .navbar {
-            padding: 20px 50px; background: white; display: flex;
-            justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
+       
         .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--primary); font-size: 1.4rem; }
-        .logo img { width: 40px; }
+        .logo img { width: 40px;  }
+        /* Glassy rounded navbar */
+.glass-navbar {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+.glass-inner {
+  width: 95%;
+  max-width: 1200px;
+  padding: 14px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+/* Logo */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-logo img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+
+.nav-logo h1 {
+  font-size: 1.3rem;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.nav-logo p {
+  font-size: 0.7rem;
+  color: #636e72;
+}
+
+/* Right */
+.nav-right .secure {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #2d3436;
+  background: rgba(0, 123, 255, 0.1);
+  padding: 6px 14px;
+  border-radius: 999px;
+}
 
         /* Hero Section */
         .hero { padding: 60px 50px; text-align: center; }
@@ -72,15 +130,28 @@
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="logo">
-            <img src="{{ url_for('static', filename='beyond.png') }}" alt="Logo">
-            MEDEXA OS
-        </div>
-        <div class="user-info">
-            <span style="font-size: 0.8rem; font-weight: 600;"><i class="fas fa-user-shield"></i> SECURE ACCESS</span>
-        </div>
-    </nav>
+   <nav class="glass-navbar">
+  <div class="glass-inner">
+
+    <!-- Logo -->
+    <div class="nav-logo">
+      <img src="{{ url_for('static', filename='beyond.png') }}" alt="Logo">
+      <div>
+        <h1>MEDEXA AI</h1>
+        <p>AI Health Ecosystem</p>
+      </div>
+    </div>
+
+    <!-- Right side -->
+    <div class="nav-right">
+      <span class="secure">
+        <i class="fas fa-user-shield"></i> SECURE ACCESS
+      </span>
+    </div>
+
+  </div>
+</nav>
+
 
     <header class="hero">
         <h1>Welcome to Medexa AI</h1>
@@ -109,6 +180,20 @@
     <div class="icon-box risk-icon"><i class="fas fa-chart-line"></i></div>
     <h3>Risk Predictor</h3>
     <p>Predict your heart health risk using medical data like BP and cholesterol. Get instant AI lifestyle insights.</p>
+</a>
+
+ <a href="/med_interact" class="card">
+    <span class="badge active">AVAILABLE</span>
+    <div class="icon-box med-icon"><i class="fas fa-pills"></i></div>
+    <h3>Med-Interact</h3>
+    <p>Check for dangerous drug interactions between your medications. Upload images or type names.</p>
+</a>
+
+<a href="/scribe" class="card">
+    <span class="badge active">AVAILABLE</span>
+    <div class="icon-box scribe-icon" style="background: #e0e7ff; color: #4f46e5;"><i class="fas fa-file-medical"></i></div>
+    <h3>Med-Scribe</h3>
+    <p>Convert messy doctor notes into professional digital prescriptions and PDF reports automatically.</p>
 </a>
 
         <a href="/emergency" class="card" style="border-color: #ff7675; background: #fff5f5;">
