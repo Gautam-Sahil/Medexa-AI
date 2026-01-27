@@ -3,28 +3,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Medexa AI | Health Risk Predictor</title>
-     <link rel="icon" type="image/png" href="{{ url_for('static', filename='beyond.png') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Medexa AI | Premium Health Insights</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='beyond.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
-            --primary: #10ac84;
-            --primary-dark: #0d966e;
-            --secondary: #6c63ff;
-            --danger: #ff4757;
-            --warning: #ffa502;
-            --success: #2ed573;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --card-bg: #ffffff;
-            --gradient-primary: linear-gradient(135deg, #10ac84 0%, #6c63ff 100%);
-            --gradient-danger: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
-            --gradient-warning: linear-gradient(135deg, #ffa502 0%, #ffbe76 100%);
-            --gradient-success: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.12);
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --primary: #2dce89;
+            --secondary: #5e72e4;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
         }
 
         * {
@@ -34,888 +24,549 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-dark);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            /* Cool Mesh Gradient Background */
+            background-color: #fdfdff;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(161, 74%, 81%, 0.49) 0px, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(225, 73%, 80%, 0.5) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(339, 49%, 80%, 0.5) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(190, 72%, 80%, 0.5) 0px, transparent 50%);
             padding: 20px;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1200px;
+        .dashboard-container {
             width: 100%;
+            max-width: 1100px;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            animation: fadeIn 0.8s ease;
+            grid-template-columns: 420px 1fr;
+            gap: 24px;
+            animation: fadeIn 1s ease-out;
+            height: auto;
+            min-height: 600px;
+            max-height: 720px;
         }
 
-        /* Card Styles */
-        .card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        /* Form Card */
-        .form-card {
+        /* Glassmorphism Card Style */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.04);
+            padding: 35px;
             position: relative;
-            overflow: hidden;
-        }
-
-        .form-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient-primary);
-        }
-
-        .form-header {
+            height: auto;
             display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
+            flex-direction: column;
         }
 
-        .form-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, rgba(16, 172, 132, 0.15) 0%, rgba(108, 99, 255, 0.15) 100%);
-            border-radius: 16px;
+        /* Left Panel - Form */
+        .form-panel {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            font-size: 1.8rem;
+            flex-direction: column;
+            height: 100%;
         }
 
-        .form-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--dark);
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        /* Header UI */
+        .header-box { 
+            margin-bottom: 25px; 
         }
-
-        .form-subtitle {
-            color: var(--gray);
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        /* Form Groups */
-        .form-group {
-            margin-bottom: 25px;
-            position: relative;
-        }
-
-        .form-label {
-            display: flex;
+        
+        .ai-status {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .form-label i {
+            background: #fff;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
             color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            margin-bottom: 15px;
+        }
+        
+        .ai-status i { 
+            font-size: 8px; 
+            animation: pulse 2s infinite; 
         }
 
-        .form-input {
+        h1 { 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            letter-spacing: -0.5px; 
+            margin-bottom: 8px; 
+        }
+        
+        .subtitle { 
+            font-size: 0.9rem; 
+            color: var(--text-muted); 
+            line-height: 1.5; 
+        }
+
+        /* Form Styling */
+        .form-grid { 
+            flex: 1;
+            display: flex; 
+            flex-direction: column; 
+            gap: 18px; 
+        }
+        
+        .input-group { 
+            position: relative; 
+        }
+        
+        .input-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            display: block;
+            padding-left: 4px;
+        }
+        
+        .input-field {
             width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
+            padding: 14px 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.7);
+            font-family: inherit;
+            font-weight: 500;
             font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-            color: var(--dark);
-            background: #f8fafc;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .form-input:focus {
+        
+        .input-field:focus {
             outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(16, 172, 132, 0.1);
+            background: #fff;
+            border-color: var(--secondary);
+            box-shadow: 0 10px 20px rgba(94, 114, 228, 0.08);
+            transform: translateY(-1px);
         }
 
-        .input-with-icon {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-        }
-
-        .range-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-top: 8px;
-        }
-
-        /* Select Styling */
-        .select-wrapper {
-            position: relative;
-        }
-
-        .select-wrapper::after {
-            content: '▼';
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-            pointer-events: none;
-        }
-
-        .form-select {
-            appearance: none;
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-            color: var(--dark);
-            background: #f8fafc;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .form-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(16, 172, 132, 0.1);
-        }
-
-        /* Submit Button */
-        .submit-btn {
-            width: 100%;
-            padding: 18px;
-            background: var(--gradient-primary);
+        /* Submit Button with Shimmer */
+        .btn-predict {
+            background: linear-gradient(135deg, #5e72e4 0%, #825ee4 100%);
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            padding: 18px;
+            border-radius: 18px;
+            font-weight: 700;
+            font-size: 1rem;
             cursor: pointer;
+            margin-top: auto; /* Pushes button to bottom */
+            transition: 0.4s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
-            transition: all 0.3s ease;
-            margin-top: 20px;
             position: relative;
             overflow: hidden;
         }
-
-        .submit-btn:hover {
+        
+        .btn-predict:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(16, 172, 132, 0.25);
+            box-shadow: 0 15px 30px rgba(94, 114, 228, 0.3);
         }
 
-        .submit-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .submit-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .submit-btn:hover::before {
-            left: 100%;
-        }
-
-        /* Results Card */
-        .results-card {
+        /* Right Panel - Results */
+        .results-section {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             text-align: center;
+            height: 100%;
         }
 
-        .results-header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .results-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .risk-level {
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            background: rgba(16, 172, 132, 0.15);
-            color: var(--primary);
-        }
-
-        /* Risk Score Circle */
-        .score-container {
-            position: relative;
-            margin: 30px 0;
-        }
-
-        .score-circle {
-            width: 180px;
-            height: 180px;
+        /* Dynamic Liquid Score Circle */
+        .score-orb {
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
-            background: conic-gradient(var(--primary) 0% 0%, #f1f5f9 0% 100%);
+            background: white;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            transition: all 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            margin-bottom: 30px;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.03), 0 20px 40px rgba(0,0,0,0.05);
+            border: 8px solid #fff;
+            flex-shrink: 0;
         }
-
-        .score-circle::before {
-            content: '';
+        
+        .liquid-fill {
             position: absolute;
-            width: 160px;
-            height: 160px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .score-value {
-            position: relative;
-            z-index: 1;
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--dark);
-        }
-
-        .score-percent {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--gray);
-        }
-
-        .score-label {
-            margin-top: 15px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        /* AI Insights */
-        .ai-insights {
+            bottom: 0;
             width: 100%;
-            margin-top: 30px;
-            padding: 25px;
-            background: #f8fafc;
-            border-radius: 16px;
-            text-align: left;
-            animation: slideUp 0.5s ease;
+            height: 0%; /* Dynamic */
+            background: linear-gradient(0deg, var(--primary), #51efad);
+            border-radius: 50%;
+            transition: height 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0.6;
         }
 
-        .insights-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            color: var(--dark);
-        }
-
-        .insights-header i {
-            color: var(--primary);
-            font-size: 1.3rem;
-        }
-
-        .insights-content {
-            color: var(--dark);
-            line-height: 1.7;
-            font-size: 0.95rem;
-        }
-
-        .insights-content h3 {
-            color: var(--primary);
-            margin: 15px 0 10px;
-            font-size: 1.1rem;
-        }
-
-        .insights-content ul {
-            padding-left: 20px;
-            margin: 10px 0;
-        }
-
-        .insights-content li {
-            margin-bottom: 8px;
+        .score-text {
             position: relative;
+            z-index: 2;
+            font-size: 3.5rem;
+            font-weight: 800;
+        }
+        
+        .score-unit { 
+            font-size: 1.2rem; 
+            color: var(--text-muted); 
+            font-weight: 600; 
         }
 
-        .insights-content li::before {
-            content: '•';
-            color: var(--primary);
-            font-weight: bold;
-            display: inline-block;
-            width: 1em;
-            margin-left: -1em;
+        .risk-pill {
+            padding: 8px 24px;
+            border-radius: 100px;
+            background: #fff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .insight-card {
+            width: 100%;
+            background: rgba(251, 246, 246, 0.393);
+            border-radius: 24px;
+            padding: 20px;
+            text-align: left;
+            margin-top: 15px;
+            border: 1px solid rgba(255, 231, 231, 0.8);
+            max-height: 200px;
+            min-height: 200px;
+            overflow-y: auto;
+            display: none;
+            flex-shrink: 0;
+        }
+
+        .insight-card h3 { 
+            font-size: 0.9rem; 
+            margin-bottom: 10px; 
+            color: var(--secondary); 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+
+        /* Results UI Container */
+        #results-ui {
+            display: none;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #placeholder-ui {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+        }
+
+        #placeholder-ui i {
+            font-size: 4rem; 
+            color: rgba(0,0,0,0.05); 
+            margin-bottom: 20px;
+        }
+
+        /* Spinner */
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
         }
 
         /* Reset Button */
         .reset-btn {
-            width: 100%;
-            padding: 16px;
-            background: transparent;
-            color: var(--gray);
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
+            margin-top: 20px; 
+            background: none; 
+            border: none; 
+            color: var(--secondary); 
+            font-weight: 700; 
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            margin-top: 25px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            flex-shrink: 0;
         }
-
+        
         .reset-btn:hover {
-            background: #f8fafc;
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            background: white;
-            border-radius: 12px;
-            padding: 18px 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            transform: translateX(400px);
-            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            border-left: 5px solid var(--primary);
-            max-width: 350px;
-            z-index: 1000;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.error {
-            border-left-color: var(--danger);
-        }
-
-        .toast-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            background: rgba(16, 172, 132, 0.15);
-            color: var(--primary);
-        }
-
-        .toast.error .toast-icon {
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
-        }
-
-        .toast-content {
-            flex: 1;
-        }
-
-        .toast-title {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 4px;
-        }
-
-        .toast-message {
-            color: var(--gray);
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-
-        .toast-close {
-            background: none;
-            border: none;
-            color: var(--gray);
-            cursor: pointer;
-            padding: 5px;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-
-        .toast-close:hover {
-            opacity: 1;
+            background: rgba(94, 114, 228, 0.1);
         }
 
         /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
         }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        @keyframes pulse { 
+            0% { opacity: 1; } 
+            50% { opacity: 0.3; } 
+            100% { opacity: 1; } 
         }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
         }
 
         /* Responsive */
-        @media (max-width: 900px) {
-            .container {
-                grid-template-columns: 1fr;
-                gap: 20px;
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                max-height: none;
+                height: auto;
+                min-height: auto;
             }
             
-            .card {
-                padding: 30px;
-            }
-            
-            .score-circle {
-                width: 150px;
-                height: 150px;
-            }
-            
-            .score-circle::before {
-                width: 130px;
-                height: 130px;
-            }
-            
-            .score-value {
-                font-size: 2.5rem;
+            .glass-panel {
+                min-height: 500px;
             }
         }
 
+        @media (max-width: 900px) {
+            .dashboard-container { 
+                grid-template-columns: 1fr;
+                gap: 20px;
+                max-height: none;
+            }
+            
+            .glass-panel { 
+                padding: 25px; 
+                min-height: auto;
+            }
+            
+            .score-orb {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .score-text {
+                font-size: 2.8rem;
+            }
+        }
+        
         @media (max-width: 480px) {
             body {
-                padding: 10px;
+                padding: 15px;
             }
             
-            .card {
-                padding: 25px;
+            .glass-panel {
+                padding: 20px;
+                border-radius: 24px;
             }
             
-            .form-title, .results-title {
+            h1 {
                 font-size: 1.5rem;
             }
             
-            .toast {
-                right: 15px;
-                left: 15px;
-                max-width: none;
+            .score-orb {
+                width: 160px;
+                height: 160px;
             }
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            width: 24px;
-            height: 24px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            display: none;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+            
+            .score-text {
+                font-size: 2.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Toast Container -->
-    <div id="toast-container"></div>
-
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Form Card -->
-        <div class="card form-card">
-            <div class="form-header">
-                <div class="form-icon">
-                    <i class="fas fa-heartbeat"></i>
+    <div class="dashboard-container">
+        <!-- Left Panel - Form -->
+        <aside class="glass-panel form-panel">
+            <div class="header-box">
+                <div class="ai-status">
+                    <i class="fas fa-circle"></i> SYSTEM ONLINE
                 </div>
-                <div>
-                    <h1 class="form-title">Heart Risk Assessment</h1>
-                    <p class="form-subtitle">Enter your health details to calculate your 10-year cardiovascular risk score</p>
-                </div>
+                <h1>Medexa AI</h1>
+                <p class="subtitle">Neural heart risk engine provides a 10-year probability analysis.</p>
             </div>
 
-            <form id="riskForm">
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-user"></i>
-                        Age
-                    </label>
-                    <div class="input-with-icon">
-                        <input type="number" id="age" class="form-input" placeholder="e.g. 45" min="20" max="100" required>
-                        <span class="input-icon">years</span>
+            <form id="riskForm" class="form-grid">
+                <div class="input-group">
+                    <label class="input-label">Patient Age</label>
+                    <input type="number" id="age" class="input-field" placeholder="e.g. 45" min="20" max="100" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="input-group">
+                        <label class="input-label">Blood Pressure</label>
+                        <input type="number" id="bp" class="input-field" placeholder="120" required>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Cholesterol</label>
+                        <input type="number" id="chol" class="input-field" placeholder="200" required>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Blood Pressure
-                    </label>
-                    <div class="input-with-icon">
-                        <input type="number" id="bp" class="form-input" placeholder="e.g. 130" min="70" max="200" required>
-                        <span class="input-icon">mmHg</span>
-                    </div>
-                    <div class="range-labels">
-                        <span>Normal: <120</span>
-                        <span>High: ≥140</span>
-                    </div>
+                <div class="input-group">
+                    <label class="input-label">Lifestyle: Smoker Status</label>
+                    <select id="smoker" class="input-field" style="appearance: none; cursor: pointer;">
+                        <option value="no">🚭 No, I don't smoke</option>
+                        <option value="yes">🚬 Yes, I am a smoker</option>
+                    </select>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-vial"></i>
-                        Cholesterol Level
-                    </label>
-                    <div class="input-with-icon">
-                        <input type="number" id="chol" class="form-input" placeholder="e.g. 200" min="100" max="400" required>
-                        <span class="input-icon">mg/dL</span>
-                    </div>
-                    <div class="range-labels">
-                        <span>Optimal: <200</span>
-                        <span>High: ≥240</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-smoking"></i>
-                        Smoking Status
-                    </label>
-                    <div class="select-wrapper">
-                        <select id="smoker" class="form-select" required>
-                            <option value="no">🚭 Non-Smoker</option>
-                            <option value="yes">🚬 Current Smoker</option>
-                        </select>
-                    </div>
-                </div>
-
-                <button type="submit" class="submit-btn" id="submit-btn">
-                    <span id="btn-text">Calculate Risk Score</span>
-                    <i class="fas fa-calculator"></i>
-                    <div class="spinner" id="spinner"></div>
+                <button type="submit" class="btn-predict" id="submit-btn">
+                    <span id="btn-text">Generate Analysis</span>
+                    <i class="fas fa-sparkles"></i>
+                    <div class="loader" id="loader"></div>
                 </button>
             </form>
-        </div>
+        </aside>
 
-        <!-- Results Card -->
-        <div class="card results-card">
-            <div class="results-header">
-                <h2 class="results-title">Your Results</h2>
-                <div class="risk-level" id="risk-level">Waiting...</div>
+        <!-- Right Panel - Results -->
+        <main class="glass-panel results-section">
+            <div id="placeholder-ui">
+                <i class="fas fa-chart-network"></i>
+                <h2 style="color: var(--text-muted); font-weight: 500; margin-bottom: 10px;">Ready for Input</h2>
+                <p class="subtitle" style="max-width: 300px;">Enter patient metrics on the left to activate the AI predictor.</p>
             </div>
 
-            <div class="score-container">
-                <div class="score-circle" id="score-circle">
-                    <div class="score-value">0<span class="score-percent">%</span></div>
+            <div id="results-ui">
+                <div class="score-orb">
+                    <div class="liquid-fill" id="liquid"></div>
+                    <div class="score-text">
+                        <span id="score-val">0</span><span class="score-unit">%</span>
+                    </div>
                 </div>
-                <div class="score-label" id="score-label">10-Year Heart Risk</div>
-            </div>
 
-            <div class="ai-insights" id="ai-insights" style="display: none;">
-                <div class="insights-header">
-                    <i class="fas fa-brain"></i>
-                    <h3>AI-Powered Insights</h3>
+                <div class="risk-pill" id="risk-status">Low Probability</div>
+
+                <div class="insight-card" id="insight-box">
+                    <h3><i class="fas fa-brain"></i> Intelligence Insights</h3>
+                    <div id="insight-content" style="font-size: 0.85rem; line-height: 1.6; color: var(--text-muted);"></div>
                 </div>
-                <div class="insights-content" id="insights-content"></div>
-            </div>
 
-            <button class="reset-btn" id="reset-btn" style="display: none;" onclick="resetForm()">
-                <i class="fas fa-redo"></i>
-                New Assessment
-            </button>
-
-            <div id="placeholder" style="text-align: center; color: var(--gray); margin-top: 40px;">
-                <i class="fas fa-chart-line" style="font-size: 4rem; color: rgba(16, 172, 132, 0.2); margin-bottom: 20px;"></i>
-                <h3 style="font-size: 1.2rem; margin-bottom: 10px;">No Assessment Yet</h3>
-                <p style="max-width: 300px; line-height: 1.5;">
-                    Enter your health details to get a personalized cardiovascular risk assessment
-                </p>
+                <button class="reset-btn" onclick="resetUI()">
+                    <i class="fas fa-redo"></i> Reset Assessment
+                </button>
             </div>
-        </div>
+        </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        // Toast Notification System
-        function showToast(message, type = 'info', duration = 5000) {
-            const container = document.getElementById('toast-container');
-            const toastId = 'toast-' + Date.now();
-            
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.id = toastId;
-            toast.innerHTML = `
-                <div class="toast-icon">
-                    <i class="fas ${type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i>
-                </div>
-                <div class="toast-content">
-                    <div class="toast-title">${type === 'error' ? 'Error' : 'Notice'}</div>
-                    <div class="toast-message">${message}</div>
-                </div>
-                <button class="toast-close" onclick="removeToast('${toastId}')">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            container.appendChild(toast);
-            
-            // Show with animation
-            setTimeout(() => toast.classList.add('show'), 10);
-            
-            // Auto remove
-            if (duration > 0) {
-                setTimeout(() => removeToast(toastId), duration);
-            }
-        }
-        
-        function removeToast(toastId) {
-            const toast = document.getElementById(toastId);
-            if (toast) {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 400);
-            }
-        }
-
-        // Elements
         const form = document.getElementById('riskForm');
-        const submitBtn = document.getElementById('submit-btn');
-        const btnText = document.getElementById('btn-text');
-        const spinner = document.getElementById('spinner');
-        const scoreCircle = document.getElementById('score-circle');
-        const scoreValue = document.querySelector('.score-value');
-        const scoreLabel = document.getElementById('score-label');
-        const riskLevel = document.getElementById('risk-level');
-        const aiInsights = document.getElementById('ai-insights');
-        const insightsContent = document.getElementById('insights-content');
-        const resetBtn = document.getElementById('reset-btn');
-        const placeholder = document.getElementById('placeholder');
-
-        // Initialize marked
-        marked.setOptions({
-            breaks: true,
-            gfm: true
-        });
-
-        // Form submission
-        form.addEventListener('submit', async function(e) {
+        
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Validate inputs
-            const age = parseInt(document.getElementById('age').value);
-            const bp = parseInt(document.getElementById('bp').value);
-            const chol = parseInt(document.getElementById('chol').value);
-            const smoker = document.getElementById('smoker').value;
-            
-            if (!age || !bp || !chol) {
-                showToast('Please fill in all fields with valid numbers', 'error');
-                return;
-            }
-            
-            if (age < 20 || age > 100) {
-                showToast('Please enter age between 20 and 100', 'error');
-                return;
-            }
-            
-            if (bp < 70 || bp > 200) {
-                showToast('Please enter valid blood pressure (70-200 mmHg)', 'error');
-                return;
-            }
-            
-            if (chol < 100 || chol > 400) {
-                showToast('Please enter valid cholesterol level (100-400 mg/dL)', 'error');
-                return;
-            }
-            
-            // Show loading state
-            submitBtn.disabled = true;
-            btnText.textContent = 'Analyzing...';
-            spinner.style.display = 'block';
-            
-            const data = {
-                age: age,
-                bp: bp,
-                chol: chol,
-                smoker: smoker
+            // Loading State
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('btn-text').textContent = 'Processing...';
+            document.getElementById('submit-btn').disabled = true;
+
+            const payload = {
+                age: document.getElementById('age').value,
+                bp: document.getElementById('bp').value,
+                chol: document.getElementById('chol').value,
+                smoker: document.getElementById('smoker').value
             };
-            
+
             try {
                 const response = await fetch('/predict_risk', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
                 });
-                
-                if (!response.ok) {
-                    if (response.status === 429) {
-                        throw new Error('AI service is currently busy. Please try again in a moment.');
-                    }
-                    throw new Error(`Request failed with status ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                // Hide placeholder
-                placeholder.style.display = 'none';
-                
-                // Update score with animation
-                const finalScore = result.score;
-                animateScore(finalScore);
-                
-                // Update risk level
-                let levelText, levelColor, circleColor;
-                if (finalScore < 10) {
-                    levelText = 'LOW RISK';
-                    levelColor = 'var(--success)';
-                    circleColor = 'var(--success)';
-                } else if (finalScore < 20) {
-                    levelText = 'MODERATE RISK';
-                    levelColor = 'var(--warning)';
-                    circleColor = 'var(--warning)';
-                } else {
-                    levelText = 'HIGH RISK';
-                    levelColor = 'var(--danger)';
-                    circleColor = 'var(--danger)';
-                }
-                
-                riskLevel.textContent = levelText;
-                riskLevel.style.background = levelColor.replace(')', ', 0.15)');
-                riskLevel.style.color = levelColor;
-                
-                // Update score label
-                scoreLabel.textContent = `10-Year Heart Risk (${levelText})`;
-                scoreLabel.style.color = levelColor;
-                
-                // Show AI insights
-                const html = marked.parse(result.insight);
-                insightsContent.innerHTML = html;
-                aiInsights.style.display = 'block';
-                
-                // Show reset button
-                resetBtn.style.display = 'flex';
-                
-                showToast('Risk assessment completed successfully!', 'info');
-                
-            } catch (error) {
-                console.error('Error:', error);
-                showToast(error.message || 'Failed to calculate risk score. Please try again.', 'error');
+
+                const data = await response.json();
+                renderResults(data);
+            } catch (err) {
+                alert("AI Server Timeout. Please try again.");
             } finally {
-                // Reset button state
-                submitBtn.disabled = false;
-                btnText.textContent = 'Calculate Risk Score';
-                spinner.style.display = 'none';
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('btn-text').textContent = 'Generate Analysis';
+                document.getElementById('submit-btn').disabled = false;
             }
         });
 
-        // Animate score
-        function animateScore(finalScore) {
-            let currentScore = 0;
-            const increment = finalScore / 50;
-            const animationDuration = 1500;
-            const interval = animationDuration / 50;
-            
+        function renderResults(data) {
+            document.getElementById('placeholder-ui').style.display = 'none';
+            document.getElementById('results-ui').style.display = 'flex';
+            document.getElementById('insight-box').style.display = 'block';
+
+            // Liquid Animation
+            const score = Math.round(data.score);
+            const liquid = document.getElementById('liquid');
+            liquid.style.height = `${Math.min(score * 2.5, 100)}%`;
+
+            // Color Logic
+            let color = '#2dce89';
+            let label = "LOW RISK";
+            if(score > 12) { 
+                color = '#fb6340'; 
+                label = "MODERATE RISK"; 
+            }
+            if(score > 22) { 
+                color = '#f5365c'; 
+                label = "HIGH RISK"; 
+            }
+
+            liquid.style.background = `linear-gradient(0deg, ${color}, #51efad)`;
+            document.getElementById('risk-status').style.color = color;
+            document.getElementById('risk-status').textContent = label;
+
+            // Counter Animation
+            let count = 0;
             const timer = setInterval(() => {
-                currentScore += increment;
-                if (currentScore >= finalScore) {
-                    currentScore = finalScore;
+                document.getElementById('score-val').textContent = count;
+                count++;
+                if(count > score) {
                     clearInterval(timer);
                 }
-                
-                // Update display
-                const displayScore = Math.round(currentScore);
-                scoreValue.innerHTML = `${displayScore}<span class="score-percent">%</span>`;
-                
-                // Update circle gradient
-                const percentage = (currentScore / 35) * 100; // Assuming max 35%
-                scoreCircle.style.background = `conic-gradient(var(--primary) 0% ${percentage}%, #f1f5f9 ${percentage}% 100%)`;
-                
-            }, interval);
+            }, 30);
+
+            // Parse and display insights
+            if (data.insight) {
+                document.getElementById('insight-content').innerHTML = marked.parse(data.insight);
+            }
         }
 
-        // Reset form
-        function resetForm() {
+        function resetUI() {
             form.reset();
-            scoreValue.innerHTML = '0<span class="score-percent">%</span>';
-            scoreCircle.style.background = 'conic-gradient(var(--primary) 0% 0%, #f1f5f9 0% 100%)';
-            scoreLabel.textContent = '10-Year Heart Risk';
-            scoreLabel.style.color = '';
-            riskLevel.textContent = 'Waiting...';
-            riskLevel.style.background = 'rgba(16, 172, 132, 0.15)';
-            riskLevel.style.color = 'var(--primary)';
-            aiInsights.style.display = 'none';
-            resetBtn.style.display = 'none';
-            placeholder.style.display = 'block';
+            document.getElementById('placeholder-ui').style.display = 'flex';
+            document.getElementById('results-ui').style.display = 'none';
+            document.getElementById('liquid').style.height = '0%';
+            document.getElementById('score-val').textContent = '0';
+            document.getElementById('risk-status').textContent = 'Low Probability';
+            document.getElementById('risk-status').style.color = '';
         }
 
         // Input validation
-        document.querySelectorAll('.form-input').forEach(input => {
+        document.querySelectorAll('input[type="number"]').forEach(input => {
             input.addEventListener('input', function() {
-                if (this.value < parseInt(this.min)) {
-                    this.value = this.min;
-                }
-                if (this.value > parseInt(this.max)) {
-                    this.value = this.max;
-                }
+                const min = parseInt(this.min);
+                const max = parseInt(this.max);
+                const value = parseInt(this.value);
+                
+                if (value < min) this.value = min;
+                if (value > max) this.value = max;
             });
         });
     </script>
