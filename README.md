@@ -17,6 +17,11 @@
 
 ---
 
+## 🚀 Live Demo
+[Live Demo 1](https://medexa-ai-production.up.railway.app/)
+
+[Live Demo 2](https://medexa-ai.onrender.com)
+
 ## 🏗️ Technical Architecture
 
 
