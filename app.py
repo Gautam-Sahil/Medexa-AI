@@ -45,9 +45,21 @@ model_kwargs = {
     "temperature": 0.3
 }
 
-primary_model = ChatOpenAI(model_name="google/gemini-2.0-flash-exp:free", **model_kwargs)
-secondary_model = ChatOpenAI(model_name="meta-llama/llama-3.2-11b-vision-instruct:free", **model_kwargs)
-tertiary_model = ChatOpenAI(model_name="mistralai/pixtral-12b:free", **model_kwargs)
+primary_model = ChatOpenAI(
+    model_name="meta-llama/llama-3-8b-instruct:free",
+    **model_kwargs
+)
+
+secondary_model = ChatOpenAI(
+    model_name="mistralai/mistral-7b-instruct:free",
+    **model_kwargs
+)
+
+tertiary_model = ChatOpenAI(
+    model_name="google/gemma-7b-it:free",
+    **model_kwargs
+)
+
 
 chat_model = primary_model.with_fallbacks([secondary_model, tertiary_model])
 
