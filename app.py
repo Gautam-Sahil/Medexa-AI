@@ -46,22 +46,22 @@ model_kwargs = {
 }
 
 primary_model = ChatOpenAI(
-    model_name="meta-llama/llama-3-8b-instruct:free",
+    model_name="openrouter/free",
     **model_kwargs
 )
 
 secondary_model = ChatOpenAI(
-    model_name="mistralai/mistral-7b-instruct:free",
+    model_name="mistralai/mixtral-8x7b-instruct:free",
     **model_kwargs
 )
 
 tertiary_model = ChatOpenAI(
-    model_name="google/gemma-7b-it:free",
+    model_name="openchat/openchat-3.5-0106:free",
     **model_kwargs
 )
 
-
 chat_model = primary_model.with_fallbacks([secondary_model, tertiary_model])
+
 
 # --- RAG CHAIN SETUP ---
 history_aware_retriever = create_history_aware_retriever(
